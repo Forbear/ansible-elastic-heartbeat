@@ -42,7 +42,18 @@ tags: {{ heartbeat_tags | to_yaml }}
 # output.
 #fields:
 #  env: staging
-
+{% if heartbeat_fields is defined %}
+fields:
+{% for field, value in heartbeat_fields.iteritems() %}
+  {{ field }}: {{ value }}
+{% endfor %}
+{% if heartbeat_fields_under_root is defined %}
+fields_under_root: {{ heartbeat_fields_under_root }}
+{% endif %}
+{% if heartbeat_document_type is defined %}
+document_type: {{ heartbeat_document_type }}
+{% endif %}
+{% endif %}
 
 #============================== Dashboards =====================================
 setup.dashboards.enabled: {{ heartbeat_setup_dashboards }}
@@ -109,8 +120,8 @@ output.elasticsearch:
 output.logstash:
   # The Logstash hosts
   hosts: {{ logstash_hosts | to_yaml }}
-{% if metricbeat_logstash_cert is defined %}
-  ssl.certificate_authorities: {{ metricbeat_logstash_cert }}
+{% if heartbeat_logstash_cert is defined %}
+  ssl.certificate_authorities: {{ heartbeat_logstash_cert }}
 {% endif %}
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
